@@ -16,22 +16,64 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
-        //const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_Continuous_0_10.006.continuousData";
-        //const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_0_10.006.blockData";
-        //const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_10.006_20.0129.blockData";
-        //const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_20.0129_30.0015.blockData";
         const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
         const string dir = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays";
-        const int NS = 13, MAX = 1 << NS;
+        const int MAX = MoveInfo.MAX_COORD;
 
-        Rectangle map = new Rectangle((int)(MAX * 0.4f), (int)(MAX * 0.1f), (int)(MAX * 0.5f), (int)(MAX * 0.5f));
+        Rectangle map = new Rectangle((int)(MAX * 0.45f), (int)(MAX * 0.1f), (int)(MAX * 0.4f), (int)(MAX * 0.4f));
 
-        MoveInfo[][] segments;
-        bool[] bits;
+        CharacterBlock[] blocks;
+        BitData data;
 
         public Form1()
         {
             InitializeComponent();
+            gcdTest();
+        }
+
+        private static void gcdTest()
+        {
+            int[] ns = new int[] {
+                7297, 
+9788, 
+871, 
+1115, 
+2760, 
+6554, 
+747, 
+14013, 
+6749, 
+2146, 
+656, 
+1792, 
+720
+            };
+
+            for (int i = 0; i < 690; i++)
+            {
+                int g = gcd(ns);
+                if (g > 1)
+                {
+                    Console.WriteLine(g);
+                }
+                for (int j = 0; j < ns.Length; j++)
+                {
+                    ns[j]--;
+                }
+            }
+        }
+
+        static int gcd(int a, int b)
+        {
+            if (b == 0) return a;
+            return gcd(b, a % b);
+        }
+
+        static int gcd(int[] ns, int n = 0)
+        {
+            if (n == ns.Length - 1) return ns[n];
+            int gcdRest = gcd(ns, n + 1);
+            return gcd(ns[n], gcdRest);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -68,10 +110,7 @@ namespace WindowsFormsApplication1
         {
             try
             {
-                byte[] bytes = File.ReadAllBytes(path);
-                BitArray barray = new BitArray(bytes);
-                bits = new bool[barray.Length];
-                barray.CopyTo(bits, 0);
+                data = new BitData(path);
             }
             catch
             {
@@ -83,65 +122,30 @@ namespace WindowsFormsApplication1
             g.Clear(Color.FromArgb(255, 255, 255, 255));
             this.pictureBox1.Image = bmp;
 
-            List<MoveInfo[]> segs = new List<MoveInfo[]>();
-            for (int i = 0; i < bits.Length; i++)
+            List<CharacterBlock> segs = new List<CharacterBlock>();
+            for (int i = 0; i < data.Length; i++)
             {
-                int v = value(bits, i, 24);
+                int v = data.ReadInt(i, 24);
                 if (v == 16646159)
                 {
-                    MoveInfo[] moves = readMoves(i + 42);
+                    CharacterBlock moves = CharacterBlock.Read(data, i + 24);
                     if (moves == null) continue;
-                    int id = value(bits, i + 24, 18);
-                    Console.WriteLine(id.ToBinary(18));
                     segs.Add(moves);
                 }
             }
-            segments = segs.ToArray();
+            blocks = segs.ToArray();
+
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                CharacterBlock block = blocks[i];
+                CharacterBlock next = i + 1 < blocks.Length ? blocks[i + 1] : null;
+                int after = data.ReadInt(block.index + block.bitLength, 7);
+                //Console.Write(after + ": ");//.ToBinary(7));
+                //if (next != null)
+                //    Console.WriteLine((next.index - block.index - block.bitLength) + ", ");
+            }
+
             go();
-        }
-
-        MoveInfo[] readMoves(int index)
-        {
-            int length = value(bits, index, 7);
-            index += 7;
-            int time = 0;
-            List<MoveInfo> infos = new List<MoveInfo>();
-            for (int i = 0; i < length; i++)
-            {
-                if (index >= bits.Length) return null;
-                MoveInfo info = readMove(index);
-                if (info.time < time) return null;
-                time = info.time;
-                index += 35;
-                infos.Add(info);
-            }
-            return infos.ToArray();
-        }
-
-        static int value(bool[] bits, int index, int length)
-        {
-            if (length > 32) throw new Exception("Too large for int");
-            return (int)valueL(bits, index, length);
-        }
-
-        static long valueL(bool[] bits, int index, int length)
-        {
-            long v = 0;
-            for (int i = index + length - 1; i >= index; i--)
-            {
-                v <<= 1;
-                if (i < bits.Length && bits[i]) v |= 1;
-            }
-            return v;
-        }
-
-        static byte cut(byte b, int start, int length)
-        {
-            if (start > 0) b = (byte)(b << start);
-            int mask = 0;
-            for (int i = 0; i < length; i++) mask |= 1 << i;
-            b = (byte)(b & mask);
-            return b;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -164,12 +168,12 @@ namespace WindowsFormsApplication1
 
             int time = this.trackBar1.Value;
             int index = 0;
-            foreach (MoveInfo[] segment in segments)
+            foreach (CharacterBlock block in blocks)
             {
-                int r = index * 255 / segments.Length;
+                int r = index * 255 / blocks.Length;
                 Color color = Color.FromArgb(255, r, 0, 255 - r);
                 PointF last = new PointF();
-                foreach (MoveInfo move in segment)
+                foreach (MoveInfo move in block.moves)
                 {
                     float x = (move.x - map.X) / (float)map.Width, y = (move.y - map.Y) / (float)map.Height;
                     int px = (int)((bmp.Width - 1) * x), py = bmp.Height - 1 - (int)((bmp.Width - 1) * y);
@@ -186,77 +190,6 @@ namespace WindowsFormsApplication1
             }
 
             this.pictureBox1.Refresh();
-        }
-
-        private void go_old(bool updateRect = false)
-        {
-            int start = (int)((float)this.trackBar1.Value / this.trackBar1.Maximum * bits.Length);
-            int length = 4000;
-
-            Bitmap bmp = (Bitmap)this.pictureBox1.Image;
-            if (bmp.Width != this.pictureBox1.Width || bmp.Height != this.pictureBox1.Height)
-            {
-                bmp = new Bitmap(this.pictureBox1.Width, this.pictureBox1.Height);
-                this.pictureBox1.Image = bmp;
-            }
-            Graphics g = Graphics.FromImage(bmp);
-            g.Clear(Color.FromArgb(255, 255, 255, 255));
-
-            int[] offsetWeights = new int[35];
-            for (int i = start; i + NS < bits.Length && i < start + length; i++)
-            {
-                int time = getTime(i);
-                int lastTime = getTime(i - 35);
-
-                int delta = time - lastTime;
-                if (delta < 0) continue;
-
-                offsetWeights[i % 35]++;
-            }
-            int maxIndex = -1;
-            int maxWeight = -1;
-            for (int i = 0; i < offsetWeights.Length; i++)
-            {
-                if (offsetWeights[i] > maxWeight)
-                {
-                    maxIndex = i;
-                    maxWeight = offsetWeights[i];
-                }
-            }
-            Console.WriteLine(maxIndex);
-
-            //if (drawRect) g.DrawRectangle(Pens.Black, rect);
-
-            List<string> indices = new List<string>();
-
-            for (int i = start; i + NS < bits.Length && i < start + length; i++)
-            {
-                //if (filter && i % 35 != maxIndex) continue;
-
-                MoveInfo move = readMove(i);
-
-                float x = move.x / (float)MAX;
-                float y = move.y / (float)MAX;
-                int r = move.time / 2;
-                int b = 255 - r;
-                
-                int px = (int)((bmp.Width - 1) * x), py = bmp.Height - 1 - (int)((bmp.Width - 1) * y);
-
-                Color color = Color.FromArgb(50, r, 0, b);
-                //bmp.SetPixel(px, py, color);
-                g.FillEllipse(new SolidBrush(color), new RectangleF(px - 2, py - 2, 5, 5));
-            }
-            this.pictureBox1.Refresh();
-
-            //magic++;
-        }
-
-        private int getTime(int i)
-        {
-            int timeIndex = i - 9;
-            int time = 0;
-            if (timeIndex >= 0) time = value(bits, timeIndex, 9);
-            return time;
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -287,30 +220,12 @@ namespace WindowsFormsApplication1
         {
             if (this.openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                this.segments = new MoveInfo[][] { };
+                blocks = new CharacterBlock[] { };
                 load(this.openFileDialog1.FileName);
             }
         }
 
-        MoveInfo readMove(int i)
-        {
-            return new MoveInfo() 
-            { 
-                index = i,
-                time = value(bits, i, 9),
-                x = value(bits, i + 9, 13),
-                y = value(bits, i + 22, 13)
-            };
-        }
-
-        struct MoveInfo
-        {
-            public int index, x, y, time;
-            public override string ToString()
-            {
-                return string.Format("{0:D5} [{3:D3}]: ({1:D4}, {2:D4})", index, x, y, time);
-            }
-        }
+        
     }
 
     public static class BitmapExtensions
