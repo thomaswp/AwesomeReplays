@@ -30,18 +30,29 @@
         {
             this.components = new System.ComponentModel.Container();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.pictureBoxMovement = new System.Windows.Forms.PictureBox();
+            this.listBoxMovement = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.trackBarMovement = new System.Windows.Forms.TrackBar();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.opemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.pictureBoxAnimations = new System.Windows.Forms.PictureBox();
+            this.listBoxAnimations = new System.Windows.Forms.ListBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMovement)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarMovement)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAnimations)).BeginInit();
             this.SuspendLayout();
             // 
             // timer1
@@ -49,54 +60,54 @@
             this.timer1.Enabled = true;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // pictureBox1
+            // pictureBoxMovement
             // 
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(3, 3);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(714, 468);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
-            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
+            this.pictureBoxMovement.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBoxMovement.Location = new System.Drawing.Point(3, 3);
+            this.pictureBoxMovement.Name = "pictureBoxMovement";
+            this.pictureBoxMovement.Size = new System.Drawing.Size(700, 436);
+            this.pictureBoxMovement.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBoxMovement.TabIndex = 0;
+            this.pictureBoxMovement.TabStop = false;
+            this.pictureBoxMovement.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
+            this.pictureBoxMovement.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
             // 
-            // listBox1
+            // listBoxMovement
             // 
-            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(723, 3);
-            this.listBox1.Name = "listBox1";
-            this.tableLayoutPanel1.SetRowSpan(this.listBox1, 2);
-            this.listBox1.Size = new System.Drawing.Size(194, 503);
-            this.listBox1.TabIndex = 1;
+            this.listBoxMovement.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxMovement.FormattingEnabled = true;
+            this.listBoxMovement.Location = new System.Drawing.Point(709, 3);
+            this.listBoxMovement.Name = "listBoxMovement";
+            this.tableLayoutPanel1.SetRowSpan(this.listBoxMovement, 2);
+            this.listBoxMovement.Size = new System.Drawing.Size(194, 471);
+            this.listBoxMovement.TabIndex = 1;
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
-            this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.listBox1, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.trackBar1, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.trackBarMovement, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.listBoxMovement, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pictureBoxMovement, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 24);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(920, 509);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(906, 477);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
-            // trackBar1
+            // trackBarMovement
             // 
-            this.trackBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.trackBar1.Location = new System.Drawing.Point(3, 477);
-            this.trackBar1.Maximum = 511;
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(714, 29);
-            this.trackBar1.TabIndex = 2;
-            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            this.trackBarMovement.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.trackBarMovement.Location = new System.Drawing.Point(3, 445);
+            this.trackBarMovement.Maximum = 511;
+            this.trackBarMovement.Name = "trackBarMovement";
+            this.trackBarMovement.Size = new System.Drawing.Size(700, 29);
+            this.trackBarMovement.TabIndex = 2;
+            this.trackBarMovement.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // openFileDialog1
             // 
@@ -128,24 +139,100 @@
             this.opemToolStripMenuItem.Text = "Open";
             this.opemToolStripMenuItem.Click += new System.EventHandler(this.opemToolStripMenuItem_Click);
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 24);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(920, 509);
+            this.tabControl1.TabIndex = 4;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.tableLayoutPanel1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(912, 483);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Movement";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.tableLayoutPanel2);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(912, 483);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Animations";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
+            this.tableLayoutPanel2.Controls.Add(this.pictureBoxAnimations, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.listBoxAnimations, 1, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(906, 477);
+            this.tableLayoutPanel2.TabIndex = 1;
+            // 
+            // pictureBoxAnimations
+            // 
+            this.pictureBoxAnimations.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBoxAnimations.Location = new System.Drawing.Point(3, 3);
+            this.pictureBoxAnimations.Name = "pictureBoxAnimations";
+            this.pictureBoxAnimations.Size = new System.Drawing.Size(600, 471);
+            this.pictureBoxAnimations.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxAnimations.TabIndex = 0;
+            this.pictureBoxAnimations.TabStop = false;
+            this.pictureBoxAnimations.Click += new System.EventHandler(this.pictureBoxAnimations_Click);
+            this.pictureBoxAnimations.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBoxAnimations_MouseDown);
+            this.pictureBoxAnimations.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBoxAnimations_MouseMove);
+            // 
+            // listBoxAnimations
+            // 
+            this.listBoxAnimations.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxAnimations.FormattingEnabled = true;
+            this.listBoxAnimations.Location = new System.Drawing.Point(609, 3);
+            this.listBoxAnimations.Name = "listBoxAnimations";
+            this.listBoxAnimations.Size = new System.Drawing.Size(294, 471);
+            this.listBoxAnimations.TabIndex = 1;
+            this.listBoxAnimations.SelectedIndexChanged += new System.EventHandler(this.listBoxAnimations_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(920, 533);
-            this.Controls.Add(this.tableLayoutPanel1);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "AwesomeReplays";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMovement)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarMovement)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAnimations)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -154,14 +241,20 @@
         #endregion
 
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.PictureBox pictureBoxMovement;
+        private System.Windows.Forms.ListBox listBoxMovement;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.TrackBar trackBarMovement;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem opemToolStripMenuItem;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.PictureBox pictureBoxAnimations;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.ListBox listBoxAnimations;
     }
 }
 

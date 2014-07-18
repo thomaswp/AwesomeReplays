@@ -41,5 +41,27 @@ namespace WindowsFormsApplication1
             return v;
         }
 
+        public string ReadString(int index)
+        {
+            string s = "";
+            while (index < Length)
+            {
+                char c = (char)ReadInt(index, 8);
+                if (c == 0) break;
+                s += c;
+                index += 8;
+            }
+            return s;
+        }
+
+        public string ReadBlock(int index, int length)
+        {
+            string s = "";
+            for (int i = index + length - 1; i >= index; i--)
+            {
+                s += data[i] ? "1" : "0";
+            }
+            return s;
+        }
     }
 }
