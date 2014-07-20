@@ -16,8 +16,10 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
-        const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
-        const string dir = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays";
+        //const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
+        //const string dir = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays";
+        const string file = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_07_05_19_33_21\Replay_30.0044_40.0086.blockData";
+        const string dir = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays";
         const int MAX = MoveInfo.MAX_COORD;
 
         Rectangle map = new Rectangle((int)(MAX * 0.45f), (int)(MAX * 0.1f), (int)(MAX * 0.4f), (int)(MAX * 0.4f));
@@ -72,7 +74,6 @@ namespace WindowsFormsApplication1
             //    while (line.Length < 64) line = "0" + line;
             //    Console.WriteLine(line);
             //}
-
         }
 
         void load(string path)
@@ -95,20 +96,156 @@ namespace WindowsFormsApplication1
             for (int i = 0; i < data.Length; i++)
             {
                 int v = data.ReadInt(i, 24);
-                if (v == 16646159)
+                if (true || v == 0xFE000F)
                 {
                     CharacterBlock moves = CharacterBlock.Read(data, i + 24);
-                    if (moves == null) continue;
+                    if (moves == null || (v != 0xFE000F && moves.moves.Length < 50)) continue;
+                    if (segs.Count > 0 && i < segs[segs.Count - 1].RightBit) continue;
+                    if (v != 0xFE000F)
+                    {
+                        //Console.WriteLine(data.ReadBlock(i, 18) + "|" + data.ReadBlock(i - 50, 50) + ": " + segs.Count);
+                    }
+                    //Console.WriteLine(v.ToBinary(24) + " " + i + ": " + moves.moves.Length);
                     segs.Add(moves);
                 }
             }
             blocks = segs.ToArray();
 
-            //searchTest();
+            searchTest();
             //gcdTest();
             refreshAnimations();
 
             refreshMovement();
+        }
+
+        private void searchTest()
+        {
+            string[] names = new string[] {
+                "dud88_dud",
+                "Mislarieth",
+                "Carr Sardis",
+                "Conair Mor",
+                "Biggels",
+                "Ishthulhu",
+                "Slim Jim",
+                "Cosby Pigeon",
+                "Noam",
+                "Pillz",
+                "Mooglebot"
+            };
+            for (int i = 0; i < data.Length; i++)
+            {
+                string s = data.ReadString(i);
+                bool write = false;
+                //int idx = 0;
+                //if (s == "dud88_dud") { write = true; idx = 4; }
+                //if (s == "Mislarieth") { write = true; idx = 7; }
+                //if (s == "Carr Sardis") { write = true; idx = 5; }
+                //if (s == "Ishthulhu") { write = true;  idx = 0; }
+                //if (s == "Slim Jim") { write = true; idx = 1; }
+                //if (s == "Cosby Pigeon") { write = true; idx = 8; }
+                if (names.Contains(s)) write = true;
+                if (i >= 100)
+                {
+                    int flag1 = data.ReadInt(i - 35 - 24, 24);
+                    int flag2 = data.ReadInt(i - 80 - 20, 20);
+                    //if (flag1 == 0xFF8004 && flag2 == 0xBFE00) write = true;
+
+                    if (write)
+                    {
+                        int end = i + (s.Length + 1) * 8;
+                        string type = data.ReadString(end);
+                        end += 8 * (type.Length + 1);
+
+                        //Console.WriteLine(flag1.ToBinary(24) + " - " + flag2.ToBinary(20) + ": " + i + " " + s);
+                        //Console.WriteLine(data.ReadBlock(i - 100, 100) + ": " + i + " " + s);
+                        //Console.WriteLine(data.ReadBlock(i + (s.Length + 1) * 8, 128) + ": " + i + " " + s);
+                        foreach (CharacterBlock block in blocks)
+                        {
+                            int diff = block.index - end;
+                            if (diff > 0)
+                            {
+                                block.abilityStart = end;
+
+                                //List<long> list = new List<long>();
+                                //int marker = 15;
+                                //int start = end;
+                                //int length = 0;
+                                //while (start + length < block.index)
+                                //{
+                                //    int fifteen = data.ReadInt(start + length, marker);
+                                //    if (fifteen == 3)
+                                //    {
+                                //        list.Add(data.ReadLong(start, length));
+                                //        start += length + marker;
+                                //        length = 0;
+                                //    }
+                                //    else
+                                //    {
+                                //        length++;
+                                //    }
+                                //}
+                                //list.Add(data.ReadLong(start, length));
+                                //Console.WriteLine(string.Join(",", list) + " (" + list.Count + "): " + s);
+
+                                //Console.WriteLine(s + "/" + type + ": " + diff);
+                                if (diff < 106)
+                                {
+                                }
+                                Console.WriteLine(data.ReadBlock(end, Math.Min(512, diff)) + " " + s + ": " + diff);
+                                break;
+                            }
+                        }
+
+                        //Console.WriteLine(s + ": " + i);
+                        //Console.WriteLine(data.ReadBlock(i - 128, 128));
+                        //Console.Write(data.ReadBlock(i + (s.Length + 1) * 8, 128));
+                        //Console.WriteLine();
+                        //int diff = (blocks[idx].index - end);
+                        //int last = idx == 0 ? 0 : (blocks[idx - 1].index + blocks[idx - 1].bitLength);
+                        //int next = data.ReadInt(end, 7);
+                        //Console.WriteLine(i - last);
+                        //if (i - last == 470)
+                        //{
+                        //    Console.WriteLine(data.ReadBlock(last, i - last));
+                        //}
+                    }
+                }
+            }
+            return;
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                CharacterBlock block = blocks[i];
+                CharacterBlock next = i + 1 < blocks.Length ? blocks[i + 1] : null;
+                for (int j = 0; j < 5; j++) Console.Write(data.ReadInt(block.index - (j + 1) * 32, 32).ToBinary(32));
+                Console.WriteLine();
+                //Console.Write(block.bitLength + ": ");
+                //Console.WriteLine(((next != null ? next.index : data.Length) - block.index - block.bitLength) + ", ");
+            }
+        }
+
+        private static void gcdTest()
+        {
+            for (int d = -1; d <= 1; d += 2)
+            {
+                int[] ns = new int[] {
+                    151, 30, 85
+                };
+
+                int min = ns.Min();
+                for (int i = 0; i < min; i++)
+                {
+                    int g = gcd(ns);
+                    if (g > 1)
+                    {
+                        Console.WriteLine(g);
+                    }
+                    for (int j = 0; j < ns.Length; j++)
+                    {
+                        ns[j] += d;
+                    }
+                }
+            }
         }
 
         int filter = 2, numberBits = 9;
@@ -119,14 +256,17 @@ namespace WindowsFormsApplication1
             Bitmap bmp = new Bitmap(this.pictureBoxAnimations.Width, this.pictureBoxAnimations.Height);
             Graphics g = Graphics.FromImage(bmp);
             int charIndex = 0;
-            int start = blocks[charIndex].index + blocks[charIndex].bitLength;
-            int length = blocks[charIndex + 1].index - start;
+            //int start = blocks[charIndex].index + blocks[charIndex].bitLength;
+            //int length = blocks[charIndex + 1].index - start;
+            int start = blocks[charIndex].abilityStart;
+            int length = blocks[charIndex].index - start;
+            //Console.WriteLine(data.ReadBlock(start, length));
 
             List<string> points = new List<string>();
             for (int i = 0; i < length; i++)
             {
                 //if (i % 29 != filter) continue;
-                if (data.ReadInt(start + i + 25, 4) != 3) continue;
+                //if (data.ReadInt(start + i + 25, 4) != 3) continue;
                 int number = data.ReadInt(start + i, numberBits);
                 int full = data.ReadInt(start + i, 29);
                 int x = bmp.Width * i / length;
@@ -154,75 +294,6 @@ namespace WindowsFormsApplication1
             this.pictureBoxAnimations.Refresh();
         }
 
-        private void searchTest()
-        {
-            for (int i = 0; i < data.Length; i++)
-            {
-                string s = data.ReadString(i);
-                bool write = false;
-                int idx = 0;
-                if (s == "dud88_dud") { write = true; idx = 4; }
-                if (s == "Mislarieth") { write = true; idx = 7; }
-                if (s == "Carr Sardis") { write = true; idx = 5; }
-                if (s == "Ishthulhu") { write = true;  idx = 0; }
-                if (s == "Slim Jim") { write = true; idx = 1; }
-                if (s == "Cosby Pigeon") { write = true; idx = 8; }
-                if (write)
-                {
-                    Console.WriteLine(s);
-                    //Console.WriteLine(data.ReadBlock(i - 128, 128));
-                    //Console.Write(data.ReadBlock(i + (s.Length + 1) * 8, 128));
-                    //Console.WriteLine();
-                    int end = i + (s.Length + 1) * 8;
-                    int diff = (blocks[idx].index - end);
-                    int last = idx == 0 ? 0 : (blocks[idx - 1].index + blocks[idx - 1].bitLength);
-                    int next = data.ReadInt(end, 7);
-                    Console.WriteLine(i - last);
-                    if (i - last == 470)
-                    {
-                        Console.WriteLine(data.ReadBlock(last, i - last));
-                    }
-                }
-            }
-            return;
-            for (int i = 0; i < blocks.Length; i++)
-            {
-                CharacterBlock block = blocks[i];
-                CharacterBlock next = i + 1 < blocks.Length ? blocks[i + 1] : null;
-                for (int j = 0; j < 5; j++) Console.Write(data.ReadInt(block.index - (j + 1) * 32, 32).ToBinary(32));
-                Console.WriteLine();
-                //Console.Write(block.bitLength + ": ");
-                //Console.WriteLine(((next != null ? next.index : data.Length) - block.index - block.bitLength) + ", ");
-            }
-        }
-
-        private static void gcdTest()
-        {
-            for (int d = -1; d <= 1; d += 2)
-            {
-                int[] ns = new int[] {
-                    7007,
-                    685,
-                    2458,
-                    470,
-                    13719
-                };
-
-                for (int i = 0; i < 690; i++)
-                {
-                    int g = gcd(ns);
-                    if (g > 1)
-                    {
-                        Console.WriteLine(g);
-                    }
-                    for (int j = 0; j < ns.Length; j++)
-                    {
-                        ns[j] += d;
-                    }
-                }
-            }
-        }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             
@@ -233,6 +304,7 @@ namespace WindowsFormsApplication1
         private void refreshMovement()
         {
             Bitmap bmp = (Bitmap)this.pictureBoxMovement.Image;
+            if (bmp == null) return;
             if (bmp.Width != this.pictureBoxMovement.Width || bmp.Height != this.pictureBoxMovement.Height)
             {
                 bmp = new Bitmap(this.pictureBoxMovement.Width, this.pictureBoxMovement.Height);

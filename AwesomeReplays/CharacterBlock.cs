@@ -16,6 +16,10 @@ namespace WindowsFormsApplication1
         public readonly MoveInfo[] moves;
         public readonly int bitLength;
 
+        public int abilityStart;
+
+        public int RightBit { get { return index + bitLength; } }
+
         private CharacterBlock(int index, int id, MoveInfo[] moves)
         {
             this.index = index;
@@ -31,18 +35,19 @@ namespace WindowsFormsApplication1
             index += ID_BITS;
             int length = data.ReadInt(index, COUNT_BITS);
             index += COUNT_BITS;
-            int time = 0;
+            int time = -1;
             List<MoveInfo> infos = new List<MoveInfo>();
             for (int i = 0; i < length; i++)
             {
                 if (index >= data.Length) return null;
                 MoveInfo info = MoveInfo.Create(data, index);
-                if (info.time < time) return null;
+                if (info.time <= time) return null;
                 time = info.time;
                 index += MoveInfo.TOTAL_BITS;
                 infos.Add(info);
             }
             return new CharacterBlock(originalIndex, id, infos.ToArray());
         }
+
     }
 }
