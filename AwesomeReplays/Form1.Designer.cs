@@ -112,7 +112,7 @@
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.Filter = "BlockData Files|*.blockData";
+            this.openFileDialog1.Filter = "BlockData Files|*.blockData|ContinuousData File|*.continuousData";
             // 
             // menuStrip1
             // 
