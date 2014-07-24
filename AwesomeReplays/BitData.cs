@@ -63,5 +63,31 @@ namespace WindowsFormsApplication1
             }
             return s;
         }
+
+        public List<int> SearchInt(int value, int length)
+        {
+            List<int> indices = new List<int>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (value == ReadInt(i, length)) indices.Add(i); 
+            }
+            return indices;
+        }
+
+        public List<int> SearchIntSeries(int[] series, int length)
+        {
+            List<int> indices = new List<int>();
+            int index = 0;
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (ReadInt(i, length) == series[index])
+                {
+                    indices.Add(i);
+                    index++;
+                    if (index == series.Length) return indices;
+                }
+            }
+            return null;
+        }
     }
 }
