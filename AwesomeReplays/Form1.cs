@@ -16,10 +16,10 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
-        //const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
-        //const string dir = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays";
-        const string file = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_07_05_19_33_21\Replay_30.0044_40.0086.blockData";
-        const string dir = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays";
+        const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
+        const string dir = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays";
+        //const string file = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_07_05_19_33_21\Replay_30.0044_40.0086.blockData";
+        //const string dir = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays";
         const int MAX = MoveInfo.MAX_COORD;
 
         Rectangle map = new Rectangle((int)(MAX * 0.45f), (int)(MAX * 0.1f), (int)(MAX * 0.4f), (int)(MAX * 0.4f));
@@ -54,26 +54,6 @@ namespace WindowsFormsApplication1
             {
                 this.openFileDialog1.FileName = dir;
             }
-            //int[] starts = new int[] { 424, 10301, 25965, 31130, 42331, 58854 };
-            //int[] ends = new int[] { 2944, 13031, 28310, 34385, 44781, 62319 };
-            //int[] lengths = new int[] { 72, 78, 67, 93, 70, 99 };
-            //for (int i = 0; i < starts.Length; i++)
-            //{ 
-            //    int sp = starts[i];
-            //    long data = valueL(bits, sp - 64, 64);
-            //    string line = Convert.ToString(data, 2);
-            //    while (line.Length < 64) line = "0" + line;
-            //    int l = value(bits, sp - 7, 7);
-            //    Console.WriteLine(line + ": " + l);
-            //}
-            //Console.WriteLine();
-            //foreach (int sp in starts)
-            //{ 
-            //    long data = valueL(bits, sp + 35, 64);
-            //    string line = Convert.ToString(data, 2);
-            //    while (line.Length < 64) line = "0" + line;
-            //    Console.WriteLine(line);
-            //}
         }
 
         void load(string path)
@@ -93,21 +73,48 @@ namespace WindowsFormsApplication1
             this.pictureBoxMovement.Image = bmp;
 
             List<CharacterBlock> segs = new List<CharacterBlock>();
+
+            string currentName = null;
+            CharacterBlock currentBlock = null;
+            int currentAbilityStart = -1;
             for (int i = 0; i < data.Length; i++)
             {
-                int v = data.ReadInt(i, 24);
-                if (true || v == 0xFE000F)
+                string alias = data.ReadString(i);
+                string name = CharacterBlock.GetCharacterName(alias);
+                if (name != null)
                 {
-                    CharacterBlock moves = CharacterBlock.Read(data, i + 24);
-                    if (moves == null || (v != 0xFE000F && moves.moves.Length < 50)) continue;
-                    if (segs.Count > 0 && i < segs[segs.Count - 1].RightBit) continue;
-                    if (v != 0xFE000F)
+                    if (currentName != null)
                     {
-                        //Console.WriteLine(data.ReadBlock(i, 18) + "|" + data.ReadBlock(i - 50, 50) + ": " + segs.Count);
+                        currentBlock.name = currentName;
+                        currentBlock.abilityStart = currentAbilityStart;
+                        segs.Add(currentBlock);
+                        currentBlock = null;
                     }
-                    //Console.WriteLine(v.ToBinary(24) + " " + i + ": " + moves.moves.Length);
-                    segs.Add(moves);
+
+                    currentName = name;
+                    currentAbilityStart = i + 8 * (name.Length + 1);
+                    i = currentAbilityStart;
                 }
+
+                if (currentName != null)
+                {
+                    int v = data.ReadInt(i, 24);
+                    CharacterBlock moves = CharacterBlock.Read(data, i + 24);
+                    if (moves != null)
+                    {
+                        if (currentBlock == null || moves.bitLength > currentBlock.bitLength)
+                        {
+                            currentBlock = moves;
+                            if (v == 0xFE000F) i = moves.RightBit;
+                        }
+                    }
+                }
+            }
+            if (currentName != null)
+            {
+                currentBlock.name = currentName;
+                currentBlock.abilityStart = currentAbilityStart;
+                segs.Add(currentBlock);
             }
             blocks = segs.ToArray();
 
@@ -131,97 +138,30 @@ namespace WindowsFormsApplication1
                 "Cosby Pigeon",
                 "Noam",
                 "Pillz",
-                "Mooglebot"
-            };
-            for (int i = 0; i < data.Length; i++)
+                "Mooglebot",
+                "CreepDroidMelee"
+            };            
+
+            foreach (CharacterBlock block in blocks)
             {
-                string s = data.ReadString(i);
-                bool write = false;
-                //int idx = 0;
-                //if (s == "dud88_dud") { write = true; idx = 4; }
-                //if (s == "Mislarieth") { write = true; idx = 7; }
-                //if (s == "Carr Sardis") { write = true; idx = 5; }
-                //if (s == "Ishthulhu") { write = true;  idx = 0; }
-                //if (s == "Slim Jim") { write = true; idx = 1; }
-                //if (s == "Cosby Pigeon") { write = true; idx = 8; }
-                if (names.Contains(s)) write = true;
-                if (i >= 100)
-                {
-                    int flag1 = data.ReadInt(i - 35 - 24, 24);
-                    int flag2 = data.ReadInt(i - 80 - 20, 20);
-                    //if (flag1 == 0xFF8004 && flag2 == 0xBFE00) write = true;
-
-                    if (write)
-                    {
-                        int end = i + (s.Length + 1) * 8;
-                        string type = data.ReadString(end);
-                        end += 8 * (type.Length + 1);
-
-                        //Console.WriteLine(flag1.ToBinary(24) + " - " + flag2.ToBinary(20) + ": " + i + " " + s);
-                        //Console.WriteLine(data.ReadBlock(i - 100, 100) + ": " + i + " " + s);
-                        //Console.WriteLine(data.ReadBlock(i + (s.Length + 1) * 8, 128) + ": " + i + " " + s);
-                        foreach (CharacterBlock block in blocks)
-                        {
-                            int diff = block.index - end;
-                            if (diff > 0)
-                            {
-                                block.abilityStart = end;
-
-                                //List<long> list = new List<long>();
-                                //int marker = 15;
-                                //int start = end;
-                                //int length = 0;
-                                //while (start + length < block.index)
-                                //{
-                                //    int fifteen = data.ReadInt(start + length, marker);
-                                //    if (fifteen == 3)
-                                //    {
-                                //        list.Add(data.ReadLong(start, length));
-                                //        start += length + marker;
-                                //        length = 0;
-                                //    }
-                                //    else
-                                //    {
-                                //        length++;
-                                //    }
-                                //}
-                                //list.Add(data.ReadLong(start, length));
-                                //Console.WriteLine(string.Join(",", list) + " (" + list.Count + "): " + s);
-
-                                //Console.WriteLine(s + "/" + type + ": " + diff);
-                                if (diff < 106)
-                                {
-                                }
-                                Console.WriteLine(data.ReadBlock(end, Math.Min(512, diff)) + " " + s + ": " + diff);
-                                break;
-                            }
-                        }
-
-                        //Console.WriteLine(s + ": " + i);
-                        //Console.WriteLine(data.ReadBlock(i - 128, 128));
-                        //Console.Write(data.ReadBlock(i + (s.Length + 1) * 8, 128));
-                        //Console.WriteLine();
-                        //int diff = (blocks[idx].index - end);
-                        //int last = idx == 0 ? 0 : (blocks[idx - 1].index + blocks[idx - 1].bitLength);
-                        //int next = data.ReadInt(end, 7);
-                        //Console.WriteLine(i - last);
-                        //if (i - last == 470)
-                        //{
-                        //    Console.WriteLine(data.ReadBlock(last, i - last));
-                        //}
-                    }
-                }
+                int end = block.abilityStart;
+                int diff = block.index - block.abilityStart;
+                Console.WriteLine(data.ReadBlock(end, Math.Min(512, diff)) + " " + block.name + ": " + diff);
             }
-            return;
-            for (int i = 0; i < blocks.Length; i++)
-            {
-                CharacterBlock block = blocks[i];
-                CharacterBlock next = i + 1 < blocks.Length ? blocks[i + 1] : null;
-                for (int j = 0; j < 5; j++) Console.Write(data.ReadInt(block.index - (j + 1) * 32, 32).ToBinary(32));
-                Console.WriteLine();
-                //Console.Write(block.bitLength + ": ");
-                //Console.WriteLine(((next != null ? next.index : data.Length) - block.index - block.bitLength) + ", ");
-            }
+
+            //Console.WriteLine(s + ": " + i);
+            //Console.WriteLine(data.ReadBlock(i - 128, 128));
+            //Console.Write(data.ReadBlock(i + (s.Length + 1) * 8, 128));
+            //Console.WriteLine();
+            //int diff = (blocks[idx].index - end);
+            //int last = idx == 0 ? 0 : (blocks[idx - 1].index + blocks[idx - 1].bitLength);
+            //int next = data.ReadInt(end, 7);
+            //Console.WriteLine(i - last);
+            //if (i - last == 470)
+            //{
+            //    Console.WriteLine(data.ReadBlock(last, i - last));
+            //}
+
         }
 
         private static void gcdTest()
