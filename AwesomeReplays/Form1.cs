@@ -260,19 +260,38 @@ namespace WindowsFormsApplication1
                 int r = index * 255 / blocks.Length;
                 Color color = Color.FromArgb(255, r, 0, 255 - r);
                 PointF last = new PointF();
+
                 foreach (MoveInfo move in block.moves)
                 {
                     float x = (move.x - map.X) / (float)map.Width, y = (move.y - map.Y) / (float)map.Height;
                     int px = (int)((bmp.Width - 1) * x), py = bmp.Height - 1 - (int)((bmp.Width - 1) * y);
                     if (!last.IsEmpty) g.DrawLine(new Pen(Color.FromArgb(100, color)), last.X, last.Y, px, py);
+                    last.X = px; last.Y = py;
                     if (move.time >= time)
                     {
                         g.FillEllipse(new SolidBrush(color), new RectangleF(px - 2, py - 2, 5, 5));
-                        g.DrawString("" + index, new Font("Arial", 8), Brushes.Black, px - 10, py - 5);
                         break;
                     }
-                    last.X = px; last.Y = py;
                 }
+
+                string labelText = block.name;
+                Font labelFont = new Font("Arial", 8);
+                SizeF labelSize = g.MeasureString(labelText, labelFont);
+                float labelX, labelY = index / 2 * 10;
+                if (index % 2 == 0)
+                {
+                    g.DrawString(labelText, labelFont, new SolidBrush(color), 0, labelY);
+                    labelX = labelSize.Width + 3;
+                }
+                else
+                {
+                    labelX = bmp.Width - labelSize.Width;
+                    g.DrawString(labelText, labelFont, new SolidBrush(color), labelX, labelY);
+                    labelX -= 3;
+                }
+                labelY += 5;
+                g.DrawLine(new Pen(Color.FromArgb(30, color)), labelX, labelY, last.X, last.Y);
+
                 index++;
             }
 
