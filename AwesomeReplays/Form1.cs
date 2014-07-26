@@ -92,7 +92,7 @@ namespace WindowsFormsApplication1
                     }
 
                     currentName = name;
-                    currentAbilityStart = i + 8 * (name.Length + 1);
+                    currentAbilityStart = i + 8 * (alias.Length + 1);
                     i = currentAbilityStart;
                 }
 
