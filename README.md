@@ -12,6 +12,8 @@ Each .blockData file consists of all the data needed to replay ~10s of game, in 
 * A brief header of unknown format
 * A series of blocks, one per character, that detail that character's movement and activity for the 10 seconds
 * One or more sections follow this, of unknown format
+ 
+One confusing thing about working with bit-packed data is that while humans read and write binary the same way they do decimal, with the most significant bit on the left, the most significant bit in block data will be written last (as would be expected). This means, if you imagine the data one giant binary string (0010101010110...) you would read it from right to left. 
 
 ### Character Blocks ###
 The character blocks have the following format:
