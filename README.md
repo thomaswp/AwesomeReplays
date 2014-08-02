@@ -5,7 +5,7 @@ A replay parser for Awesomenauts. Currently supports reading .blockData files an
 
 Running the Parser
 ------------------
-If you want to play with the parser without building it, simply download the lastest stable version [here](/build/AwesomeReplays.exe).
+If you want to play with the parser without building it, simply download the lastest stable version [here](build/AwesomeReplays.exe?raw=true).
 
 Building the Parser
 -------------------
