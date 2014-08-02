@@ -10,6 +10,7 @@ If you want to play with the parser without building it, simply download the las
 Building the Parser
 -------------------
 * Download and install [Visual Studio Desktop Express 2013](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop)
+* Download this reposity, either using the GitHub client, the git shell or as a compiled zip (found on on the right-hand menu)
 * Open the .sln file in the root directory
 * It should work without problem
 
