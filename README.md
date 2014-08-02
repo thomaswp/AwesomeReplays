@@ -25,14 +25,14 @@ The character blocks have the following format:
 
 #### Ability Blocks ####
 
-These blocks of at least 106 bits are so-named because they seem to increase in size dramatically only after abilities are purchased. They easily could store non-ability data as well.
+These blocks of at least 106 bits are so-named because they seem to increase in size dramatically only after abilities are purchased and used. They easily could store non-ability data as well.
 
 Their format is difficult to parse, but has clear patterns and sections; however, these rules seem to have numerous exceptions. Here is the general pattern:
 * 23 bits, eg: 11010100000000000000011
 * 8 bits - if the most significant 4 of these are zero, skip the next two bullets, eg: 00001100
 * 5 bits, followed by an arbitrary number of 23-bit sections
 * possibly a repeat of the previous section
-* 23 bits, which seem to always be in the form xxxxxxxx000000000000011
+* 23 bits, which seem to always be in the form xxxxxxxx000000000000011, where the x's are the the same for a given character throughout the replay
 * 8 bits - if the most significant 4 of these are zero, skip the next bullet
 * An arbitrary number of 11-bit blocks
 * 1111111000000000000011 - happens twice if the previous section was skipped
