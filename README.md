@@ -3,16 +3,18 @@ AwesomeReplays
 
 A replay parser for Awesomenauts. Currently supports reading .blockData files and displaying the paths of each character during that time. Note, the accuracy is still not perfect, and some paths are incorrect/noise.
 
-Building the Parser
+Running the Parser
 ------------------
+If you want to play with the parser without building it, simply download the lastest stable version [here](/build/AwesomeReplays.exe).
 
+Building the Parser
+-------------------
 * Download and install [Visual Studio Desktop Express 2013](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop)
 * Open the .sln file in the root directory
 * It should work without problem
 
 Format
 ------
-
 [This is a good post](http://www.awesomenauts.com/forum/viewtopic.php?f=19&t=29690) to start with for understanding what we know about the format, but below you'll find more specific info.
 
 Each .blockData file consists of all the data needed to replay ~10s of game, in a mostly deterministic manner. The main structure of the .blockData files are as follows:
@@ -33,7 +35,6 @@ The character blocks have the following format:
 * One or more sections of unknown format
 
 #### Ability Blocks ####
-
 These blocks of at least 106 bits are so-named because they seem to increase in size dramatically only after abilities are purchased and used. They easily could store non-ability data as well.
 
 Their format is difficult to parse, but has clear patterns and sections; however, these rules seem to have numerous exceptions. Here is the general pattern:
