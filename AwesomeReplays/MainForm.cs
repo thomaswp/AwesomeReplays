@@ -17,7 +17,7 @@ namespace WindowsFormsApplication1
 {
     public partial class MainForm : Form
     {
-        const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_08_01_21_46_30\Replay_10.0083_20.0038.blockData";
+        const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
         const string dir = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays";
         //const string file = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_07_05_19_33_21\Replay_30.0044_40.0086.blockData";
         //const string dir = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays";
@@ -205,7 +205,7 @@ namespace WindowsFormsApplication1
 
         }
 
-        private void printStrings()
+        private void printStrings(string path)
         {
             string s = "";
             for (int j = 0; j < 8; j++)
@@ -217,7 +217,7 @@ namespace WindowsFormsApplication1
                 }
                 s += "\n";
             }
-            File.WriteAllText(@"C:\Users\Thomas\Desktop\test.txt", s);
+            File.WriteAllText(path, s);
         }
 
         private static void gcdTest()
@@ -307,52 +307,85 @@ namespace WindowsFormsApplication1
 
             int time = this.trackBarMovement.Value;
             int index = 0;
+            List<RectangleF> labels = new List<RectangleF>();
             foreach (CharacterBlock block in blocks)
             {
                 Bitmap icon = iconMap[block.info.icon];
 
                 int r = index * 255 / blocks.Length;
                 Color color = Color.FromArgb(255, r, 0, 255 - r);
-                PointF last = new PointF();
+                Color alphaColor = Color.FromArgb(100, color);
 
+                int iconSize = 31;
+
+                PointF last = new PointF();
                 foreach (MoveInfo move in block.moves)
                 {
-                    float x = (move.x - map.X) / (float)map.Width, y = (move.y - map.Y) / (float)map.Height;
-                    int px = (int)((bmp.Width - 1) * x), py = bmp.Height - 1 - (int)((bmp.Width - 1) * y);
-                    if (!last.IsEmpty) g.DrawLine(new Pen(Color.FromArgb(100, color)), last.X, last.Y, px, py);
-                    last.X = px; last.Y = py;
+                    PointF pos = convertMove(move, bmp);
+                    if (!last.IsEmpty) g.DrawLine(new Pen(alphaColor), last.X, last.Y, pos.X, pos.Y);
+                    last = pos;
                     if (move.time >= time)
                     {
                         if (icon == null)
-                            g.FillEllipse(new SolidBrush(color), new RectangleF(px - 2, py - 2, 5, 5));
+                        {
+                            g.FillEllipse(new SolidBrush(color), new RectangleF(pos.X - 2, pos.Y - 2, 5, 5));
+                        }
                         else
-                            g.DrawImage(icon, new Rectangle(px - 15, py - 15, 31, 31));
+                        { 
+                            RectangleF rect = new RectangleF(pos.X - iconSize / 2, pos.Y - iconSize / 2, iconSize, iconSize);
+                            g.DrawRectangle(new Pen(alphaColor, 3), rect.X, rect.Y, rect.Width, rect.Height);
+                            g.DrawImage(icon, rect);
+                        }
+
                         break;
                     }
                 }
 
-                string labelText = block.info.name;
-                Font labelFont = new Font("Arial", 8);
-                SizeF labelSize = g.MeasureString(labelText, labelFont);
-                float labelX, labelY = index / 2 * 10;
-                if (index % 2 == 0)
+                if (block.info.isHero || icon == null)
                 {
-                    g.DrawString(labelText, labelFont, new SolidBrush(color), 0, labelY);
-                    labelX = labelSize.Width + 3;
+                    //string labelText = block.playerName == null ? block.info.name : block.playerName;
+                    string labelText = block.info.name;
+                    Font labelFont = new Font("Arial", 8);
+                    SizeF labelSize = g.MeasureString(labelText, labelFont);
+                    PointF labelPos = last;
+                    labelPos.X -= labelSize.Width / 2;
+                    labelPos.Y += iconSize / 2 + 1;
+                    RectangleF labelRect = new RectangleF(labelPos, labelSize);
+                    bool repos = false;
+                    while (true)
+                    {
+                        bool brk = true;
+                        foreach (RectangleF rect in labels)
+                        {
+                            if (rect.IntersectsWith(labelRect))
+                            {
+                                labelRect.Y = rect.Bottom + 1;
+                                repos = true;
+                                brk = false;
+                            }
+                        }
+                        if (brk) break;
+                    }
+                    labels.Add(labelRect);
+                    labelPos.X = labelRect.X; labelPos.Y = labelRect.Y;
+                    //if (repos)
+                    //{
+                    //    g.DrawLine(new Pen(Color.FromArgb(30, color)), labelRect.X, labelRect.Y, last.X - 16, last.Y + 16);
+                    //}
+                    g.DrawString(labelText, labelFont, new SolidBrush(color), labelPos);
                 }
-                else
-                {
-                    labelX = bmp.Width - labelSize.Width;
-                    g.DrawString(labelText, labelFont, new SolidBrush(color), labelX, labelY);
-                    labelX -= 3;
-                }
-                labelY += 5;
-                g.DrawLine(new Pen(Color.FromArgb(30, color)), labelX, labelY, last.X, last.Y);
 
                 index++;
             }
 
             this.pictureBoxMovement.Refresh();
+        }
+
+        private PointF convertMove(MoveInfo move, Bitmap bmp)
+        {
+            float x = (move.x - map.X) / (float)map.Width, y = (move.y - map.Y) / (float)map.Height;
+            float px = ((bmp.Width - 1) * x), py = bmp.Height - 1 - ((bmp.Width - 1) * y);
+            return new PointF(px, py);
         }
 
         private void Form1_Resize(object sender, EventArgs e)

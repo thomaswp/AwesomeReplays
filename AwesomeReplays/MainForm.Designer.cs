@@ -65,7 +65,7 @@
             this.pictureBoxMovement.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBoxMovement.Location = new System.Drawing.Point(3, 3);
             this.pictureBoxMovement.Name = "pictureBoxMovement";
-            this.pictureBoxMovement.Size = new System.Drawing.Size(700, 436);
+            this.pictureBoxMovement.Size = new System.Drawing.Size(900, 436);
             this.pictureBoxMovement.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBoxMovement.TabIndex = 0;
             this.pictureBoxMovement.TabStop = false;
@@ -76,17 +76,17 @@
             // 
             this.listBoxMovement.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBoxMovement.FormattingEnabled = true;
-            this.listBoxMovement.Location = new System.Drawing.Point(709, 3);
+            this.listBoxMovement.Location = new System.Drawing.Point(909, 3);
             this.listBoxMovement.Name = "listBoxMovement";
             this.tableLayoutPanel1.SetRowSpan(this.listBoxMovement, 2);
-            this.listBoxMovement.Size = new System.Drawing.Size(194, 471);
+            this.listBoxMovement.Size = new System.Drawing.Size(1, 471);
             this.listBoxMovement.TabIndex = 1;
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.tableLayoutPanel1.Controls.Add(this.trackBarMovement, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.listBoxMovement, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.pictureBoxMovement, 0, 0);
@@ -105,7 +105,7 @@
             this.trackBarMovement.Location = new System.Drawing.Point(3, 445);
             this.trackBarMovement.Maximum = 511;
             this.trackBarMovement.Name = "trackBarMovement";
-            this.trackBarMovement.Size = new System.Drawing.Size(700, 29);
+            this.trackBarMovement.Size = new System.Drawing.Size(900, 29);
             this.trackBarMovement.TabIndex = 2;
             this.trackBarMovement.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
@@ -210,7 +210,7 @@
             this.listBoxAnimations.TabIndex = 1;
             this.listBoxAnimations.SelectedIndexChanged += new System.EventHandler(this.listBoxAnimations_SelectedIndexChanged);
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -218,7 +218,7 @@
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "AwesomeReplays";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
