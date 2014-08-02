@@ -17,18 +17,21 @@ namespace WindowsFormsApplication1
 {
     public partial class MainForm : Form
     {
-        const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
-        const string dir = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays";
-        //const string file = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_07_05_19_33_21\Replay_30.0044_40.0086.blockData";
-        //const string dir = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays";
+        const string DEFAULT_FILE = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
+        static readonly string[] DEFAULT_DIRS = new string[] {
+            @"C:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays",
+            @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays",
+            @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays",
+            @"E:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays"
+        };
+
         const int MAX = MoveInfo.MAX_COORD;
+        static readonly Rectangle MAP_BOUNDS = new Rectangle((int)(MAX * 0.45f), (int)(MAX * 0.1f), (int)(MAX * 0.4f), (int)(MAX * 0.4f));
 
-        Rectangle map = new Rectangle((int)(MAX * 0.45f), (int)(MAX * 0.1f), (int)(MAX * 0.4f), (int)(MAX * 0.4f));
+        private CharacterBlock[] blocks;
+        private BitData data;
 
-        CharacterBlock[] blocks;
-        BitData data;
-
-        Rectangle animBox = new Rectangle(0, 0, 50, 50);
+        private Rectangle animBox = new Rectangle(0, 0, 50, 50);
 
         private Dictionary<string, Bitmap> iconMap = new Dictionary<string, Bitmap>();
 
@@ -52,10 +55,13 @@ namespace WindowsFormsApplication1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            load(file);
-            if (Directory.Exists(dir))
+            load(DEFAULT_FILE);
+            foreach (string dir in DEFAULT_DIRS)
             {
-                this.openFileDialog1.FileName = dir;
+                if (Directory.Exists(dir))
+                {
+                    this.openFileDialog1.InitialDirectory = dir;
+                }
             }
         }
 
@@ -383,7 +389,7 @@ namespace WindowsFormsApplication1
 
         private PointF convertMove(MoveInfo move, Bitmap bmp)
         {
-            float x = (move.x - map.X) / (float)map.Width, y = (move.y - map.Y) / (float)map.Height;
+            float x = (move.x - MAP_BOUNDS.X) / (float)MAP_BOUNDS.Width, y = (move.y - MAP_BOUNDS.Y) / (float)MAP_BOUNDS.Height;
             float px = ((bmp.Width - 1) * x), py = bmp.Height - 1 - ((bmp.Width - 1) * y);
             return new PointF(px, py);
         }
