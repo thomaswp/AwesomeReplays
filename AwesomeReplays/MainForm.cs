@@ -8,13 +8,14 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WindowsFormsApplication1
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_08_01_21_46_30\Replay_10.0083_20.0038.blockData";
         const string dir = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays";
@@ -29,7 +30,9 @@ namespace WindowsFormsApplication1
 
         Rectangle animBox = new Rectangle(0, 0, 50, 50);
 
-        public Form1()
+        private Dictionary<string, Bitmap> iconMap = new Dictionary<string, Bitmap>();
+
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -81,7 +84,7 @@ namespace WindowsFormsApplication1
             for (int i = 0; i < data.Length; i++)
             {
                 string alias = data.ReadString(i);
-                ActorInfo info = CharacterBlock.GetCharacterName(alias);
+                ActorInfo info = ActorInfo.GetFromAlias(alias);
                 if (info != null)
                 {
                     if (currentInfo != null)
@@ -141,6 +144,23 @@ namespace WindowsFormsApplication1
             }
             blocks = segs.ToArray();
 
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            foreach (CharacterBlock block in blocks)
+            {
+                string iconName = block.info.icon;
+                if (iconMap.ContainsKey(iconName)) continue;
+
+                Bitmap icon = null;
+                try
+                {
+                    Stream stream = assembly.GetManifestResourceStream("AwesomeReplays.Resources.Avatars." + iconName);
+                    icon = new Bitmap(stream);
+                }
+                catch (Exception e) { }
+
+                iconMap.Add(iconName, icon);
+            }
+
             searchTest();
             //gcdTest();
             refreshAnimations();
@@ -151,9 +171,9 @@ namespace WindowsFormsApplication1
         private void searchTest()
         {
 
-            int index = 1;
-            int start = index == 0 ? 0 : blocks[index - 1].RightBit;
-            Console.WriteLine(data.ReadBlock(start, blocks[index].nameStart - start) + " - " + blocks[index].playerName);
+            //int index = 1;
+            //int start = index == 0 ? 0 : blocks[index - 1].RightBit;
+            //Console.WriteLine(data.ReadBlock(start, blocks[index].nameStart - start) + " - " + blocks[index].playerName);
 
             //foreach (CharacterBlock block in blocks)
             //{
@@ -273,8 +293,6 @@ namespace WindowsFormsApplication1
             
         }
 
-        //private int getTime()
-
         private void refreshMovement()
         {
             Bitmap bmp = (Bitmap)this.pictureBoxMovement.Image;
@@ -291,6 +309,8 @@ namespace WindowsFormsApplication1
             int index = 0;
             foreach (CharacterBlock block in blocks)
             {
+                Bitmap icon = iconMap[block.info.icon];
+
                 int r = index * 255 / blocks.Length;
                 Color color = Color.FromArgb(255, r, 0, 255 - r);
                 PointF last = new PointF();
@@ -303,7 +323,10 @@ namespace WindowsFormsApplication1
                     last.X = px; last.Y = py;
                     if (move.time >= time)
                     {
-                        g.FillEllipse(new SolidBrush(color), new RectangleF(px - 2, py - 2, 5, 5));
+                        if (icon == null)
+                            g.FillEllipse(new SolidBrush(color), new RectangleF(px - 2, py - 2, 5, 5));
+                        else
+                            g.DrawImage(icon, new Rectangle(px - 15, py - 15, 31, 31));
                         break;
                     }
                 }

@@ -22,6 +22,10 @@ namespace WindowsFormsApplication1
             return string.Format("{0:D5} [{3:D3}]: ({1:D4}, {2:D4})", index, x, y, time);
         }
 
+        public float XRel { get { return (float)x / MAX_COORD; } }
+        public float YRel { get { return (float)y / MAX_COORD; } }
+        public float TimeRel { get { return (float)time / MAX_TIME; } }
+
         public static MoveInfo Create(BitData data, int i)
         {
             return new MoveInfo()

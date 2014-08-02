@@ -7,8 +7,8 @@
     <ProjectGuid>{61FD3B3A-3385-467C-AE46-35246B8F1C26}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WindowsFormsApplication1</RootNamespace>
-    <AssemblyName>WindowsFormsApplication1</AssemblyName>
+    <RootNamespace>AwesomeReplays</RootNamespace>
+    <AssemblyName>AwesomeReplays</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -47,17 +47,17 @@
     <Compile Include="ActorInfo.cs" />
     <Compile Include="BitData.cs" />
     <Compile Include="CharacterBlock.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MoveInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -67,6 +67,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -80,6 +81,32 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Ayla.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Leon.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Clunk.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Coco.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Melee_Creep.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Derpl.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Flying_Creep.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Froggy.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Genji.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Gnaw.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Health_Creep.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Lonestar.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Missile_Creep.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Penny.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Raelynn.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Sentry.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Skolldir.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Skree.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Solarboss.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Swiggins.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Ted.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Vinnie.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Voltar.png" />
+    <EmbeddedResource Include="Resources\Avatars\Avatar_Yuri.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
