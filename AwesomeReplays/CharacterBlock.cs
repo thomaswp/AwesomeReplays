@@ -8,45 +8,53 @@ namespace WindowsFormsApplication1
 {
     public class CharacterBlock
     {
-        private static Dictionary<string, string> classNames = new Dictionary<string,string>();
+        private static Dictionary<string, ActorInfo> classNames = new Dictionary<string, ActorInfo>();
+
         static CharacterBlock()
         {
-            classNames.Add("Vampire", "Ayla");
-            classNames.Add("Tank", "Clunk");
-            classNames.Add("Blazer", "Coco");
-            classNames.Add("Heavy", "Derpl");
-            classNames.Add("Dasher", "Froggy G.");
-            classNames.Add("Butterfly", "Genji");
-            classNames.Add("Maw", "Gnaw");
-            classNames.Add("Cowboy", "Lonestar");
-            classNames.Add("Assassin", "Penny Fox");
-            classNames.Add("Hunter", "Raelynn");
-            classNames.Add("Spy", "Sentry X-58");
-            classNames.Add("Brute", "Skolldir");
-            classNames.Add("Shaman", "Skree");
-            classNames.Add("Captain", "Swiggins");
-            classNames.Add("Commando", "Ted");
-            classNames.Add("Summoner", "Voltar");
-            classNames.Add("Jetter", "Yuri");
+            addClass("Vampire", "Ayla", true);
+            addClass("Tank", "Clunk", true);
+            addClass("Blazer", "Coco", true);
+            addClass("Heavy", "Derpl", true);
+            addClass("Dasher", "Froggy G.", true);
+            addClass("Butterfly", "Genji", true);
+            addClass("Maw", "Gnaw", true);
+            addClass("Chameleon", "Leon", true);
+            addClass("Cowboy", "Lonestar", true);
+            addClass("Assassin", "Penny Fox", true);
+            addClass("Hunter", "Raelynn", true);
+            addClass("Spy", "Sentry X-58", true);
+            addClass("Brute", "Skolldir", true);
+            addClass("Shaman", "Skree", true);
+            addClass("Captain", "Swiggins", true);
+            addClass("Commando", "Ted", true);
+            addClass("Bird", "Vinnie & Spike", true);
+            addClass("Summoner", "Voltar", true);
+            addClass("Jetter", "Yuri", true);
 
-            classNames.Add("CreepCritterRibbit4", "Ribbit IV Creep");
-            classNames.Add("CreepCritterSorona", "Sorona Creep");
-            classNames.Add("CreepCritterAIStation404", "AI Station Creep");
-            classNames.Add("CreepCritterCrab", "Health Creep");
-            classNames.Add("CreepRoshan", "Solarboss");
-            classNames.Add("CreepDroidMelee", "Melee Creep");
-            classNames.Add("CreepDroidFlying", "Flying Creep");
-            classNames.Add("CreepDroidSuper", "Missile Creep");
-            classNames.Add("CreepCowboyBull", "Lonestar Bull");
-            classNames.Add("CreepChameleonClone", "Leon Clone");
-            classNames.Add("CreepSummonerDrone", "Voltar Drone");
-            classNames.Add("CreepSummonerHealtotem", "Voltar Healbot");
-            classNames.Add("CreepMawTurret", "Gnaw Weedling");
-            classNames.Add("CreepCaptainChain", "Swiggins Humbolt");
-            classNames.Add("CreepCommandoAirstrike", "Ted Airstrike");
-            classNames.Add("CreepShamanWall", "Skree Totem");
-            classNames.Add("CreepSpyBooth", "Sentry Teleporter");
-            classNames.Add("CreepSpy", "Sentry Blackhole");
+            addClass("CreepCritterRibbit4", "Ribbit IV Creep");
+            addClass("CreepCritterSorona", "Sorona Creep");
+            addClass("CreepCritterAIStation404", "AI Station Creep");
+            addClass("CreepCritterCrab", "Health Creep");
+            addClass("CreepRoshan", "Solarboss");
+            addClass("CreepDroidMelee", "Melee Creep");
+            addClass("CreepDroidFlying", "Flying Creep");
+            addClass("CreepDroidSuper", "Missile Creep");
+            addClass("CreepCowboyBull", "Lonestar Bull");
+            addClass("CreepChameleonClone", "Leon Clone");
+            addClass("CreepSummonerDrone", "Voltar Drone");
+            addClass("CreepSummonerHealtotem", "Voltar Healbot");
+            addClass("CreepMawTurret", "Gnaw Weedling");
+            addClass("CreepCaptainChain", "Swiggins Humbolt");
+            addClass("CreepCommandoAirstrike", "Ted Airstrike");
+            addClass("CreepShamanWall", "Skree Totem");
+            addClass("CreepSpyBooth", "Sentry Teleporter");
+            addClass("CreepSpy", "Sentry Blackhole");
+        }
+
+        private static void addClass(string alias, string name, bool isHero = false)
+        {
+            classNames.Add(alias, new ActorInfo(alias, name, isHero));
         }
         
         public const int ID_BITS = 18;
@@ -58,9 +66,11 @@ namespace WindowsFormsApplication1
         public readonly int bitLength;
 
         public int abilityStart;
-        public string name;
+        public int nameStart;
+        public ActorInfo info;
+        public string playerName;
 
-        public static string GetCharacterName(string className)
+        public static ActorInfo GetCharacterName(string className)
         {
             return classNames.ContainsKey(className) ? classNames[className] : null;
         }
@@ -96,5 +106,12 @@ namespace WindowsFormsApplication1
             return new CharacterBlock(originalIndex, id, infos.ToArray());
         }
 
+        public override string ToString()
+        {
+            string s = info.name;
+            if (playerName != null) s += " (" + playerName + ")";
+            s += " [" + moves.Length + "]";
+            return s;
+        }
     }
 }

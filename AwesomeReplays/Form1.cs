@@ -16,7 +16,7 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
-        const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
+        const string file = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_08_01_21_46_30\Replay_10.0083_20.0038.blockData";
         const string dir = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays";
         //const string file = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_07_05_19_33_21\Replay_30.0044_40.0086.blockData";
         //const string dir = @"C:\Program Files\Steam\SteamApps\common\Awesomenauts\Data\Replays";
@@ -74,29 +74,48 @@ namespace WindowsFormsApplication1
 
             List<CharacterBlock> segs = new List<CharacterBlock>();
 
-            string currentName = null;
+            ActorInfo currentInfo = null;
+            string currentPlayer = null;
             CharacterBlock currentBlock = null;
             int currentAbilityStart = -1;
             for (int i = 0; i < data.Length; i++)
             {
                 string alias = data.ReadString(i);
-                string name = CharacterBlock.GetCharacterName(alias);
-                if (name != null)
+                ActorInfo info = CharacterBlock.GetCharacterName(alias);
+                if (info != null)
                 {
-                    if (currentName != null)
+                    if (currentInfo != null)
                     {
-                        currentBlock.name = currentName;
+                        currentBlock.info = currentInfo;
+                        currentBlock.playerName = currentPlayer;
                         currentBlock.abilityStart = currentAbilityStart;
+                        currentBlock.nameStart = currentAbilityStart - (currentInfo.alias.Length + 1) * 8;
+                        if (currentPlayer != null) currentBlock.nameStart -= (currentPlayer.Length + 1) * 8;
                         segs.Add(currentBlock);
                         currentBlock = null;
                     }
 
-                    currentName = name;
+                    currentInfo = info;
+                    currentPlayer = null;
+                    if (info.isHero)
+                    {
+                        int j;
+                        for (j = 2; j < 20; j++)
+                        {
+                            int index = i - j * 8;
+                            if (index < 0) break;
+                            char c = (char) data.ReadInt(i - j * 8, 8);
+                            if (c < 32 || c > 126) break;
+                        }
+                        j--;
+                        j--; // Because this strategy always seems to overestimate by one character
+                        currentPlayer = data.ReadString(i - j * 8);
+                    }
                     currentAbilityStart = i + 8 * (alias.Length + 1);
                     i = currentAbilityStart;
                 }
 
-                if (currentName != null)
+                if (currentInfo != null)
                 {
                     int v = data.ReadInt(i, 24);
                     CharacterBlock moves = CharacterBlock.Read(data, i + 24);
@@ -110,11 +129,15 @@ namespace WindowsFormsApplication1
                     }
                 }
             }
-            if (currentName != null)
+            if (currentInfo != null)
             {
-                currentBlock.name = currentName;
+                currentBlock.info = currentInfo;
+                currentBlock.playerName = currentPlayer;
                 currentBlock.abilityStart = currentAbilityStart;
+                currentBlock.nameStart = currentAbilityStart - (currentInfo.alias.Length + 1) * 8;
+                if (currentPlayer != null) currentBlock.nameStart -= (currentPlayer.Length + 1) * 8;
                 segs.Add(currentBlock);
+                currentBlock = null;
             }
             blocks = segs.ToArray();
 
@@ -127,27 +150,25 @@ namespace WindowsFormsApplication1
 
         private void searchTest()
         {
-            string[] names = new string[] {
-                "dud88_dud",
-                "Mislarieth",
-                "Carr Sardis",
-                "Conair Mor",
-                "Biggels",
-                "Ishthulhu",
-                "Slim Jim",
-                "Cosby Pigeon",
-                "Noam",
-                "Pillz",
-                "Mooglebot",
-                "CreepDroidMelee"
-            };            
 
-            foreach (CharacterBlock block in blocks)
-            {
-                int end = block.abilityStart;
-                int diff = block.index - block.abilityStart;
-                Console.WriteLine(data.ReadBlock(end, Math.Min(512, diff)) + " " + block.name + ": " + diff);
-            }
+            int index = 1;
+            int start = index == 0 ? 0 : blocks[index - 1].RightBit;
+            Console.WriteLine(data.ReadBlock(start, blocks[index].nameStart - start) + " - " + blocks[index].playerName);
+
+            //foreach (CharacterBlock block in blocks)
+            //{
+            //    int end = block.abilityStart;
+            //    int diff = block.index - block.abilityStart;
+            //    Console.WriteLine(data.ReadBlock(end, Math.Min(512, diff)) + " " + block.name + ": " + diff);
+            //}
+
+            //for (int i = 0; i < blocks.Length - 1; i++)
+            //{
+            //    CharacterBlock block = blocks[i];
+            //    int nextAliasStart = blocks[i + 1].abilityStart - (blocks[i + 1].name.Length + 1) * 8;
+            //    int dif = nextAliasStart - block.RightBit;
+            //    Console.WriteLine(data.ReadBlock(block.RightBit, Math.Min(512, dif)) + " " + block.name + ": " + dif);
+            //}
 
             //Console.WriteLine(s + ": " + i);
             //Console.WriteLine(data.ReadBlock(i - 128, 128));
@@ -162,6 +183,21 @@ namespace WindowsFormsApplication1
             //    Console.WriteLine(data.ReadBlock(last, i - last));
             //}
 
+        }
+
+        private void printStrings()
+        {
+            string s = "";
+            for (int j = 0; j < 8; j++)
+            {
+                for (int i = j; i < data.Length - 7; i += 8)
+                {
+                    char c = (char)data.ReadInt(i, 8);
+                    if (c >= 32 && c <= 126) s += c;
+                }
+                s += "\n";
+            }
+            File.WriteAllText(@"C:\Users\Thomas\Desktop\test.txt", s);
         }
 
         private static void gcdTest()
@@ -188,24 +224,22 @@ namespace WindowsFormsApplication1
             }
         }
 
-        int filter = 2, numberBits = 9;
+        int filter = 2, numberBits = 9, charIndex = 0;
         private void refreshAnimations(bool refreshList = true)
         {
             numberBits = numberBits % 28;
             if (blocks.Length < 2) return;
             Bitmap bmp = new Bitmap(this.pictureBoxAnimations.Width, this.pictureBoxAnimations.Height);
             Graphics g = Graphics.FromImage(bmp);
-            int charIndex = 0;
-            //int start = blocks[charIndex].index + blocks[charIndex].bitLength;
-            //int length = blocks[charIndex + 1].index - start;
-            int start = blocks[charIndex].abilityStart;
-            int length = blocks[charIndex].index - start;
+            charIndex %= (blocks.Length - 1);
+            int start = blocks[charIndex].RightBit;
+            int length = blocks[charIndex + 1].abilityStart - (blocks[charIndex + 1].info.name.Length + 1) * 8 - start;
             //Console.WriteLine(data.ReadBlock(start, length));
 
             List<string> points = new List<string>();
             for (int i = 0; i < length; i++)
             {
-                //if (i % 29 != filter) continue;
+                if (i % 29 != filter) continue;
                 //if (data.ReadInt(start + i + 25, 4) != 3) continue;
                 int number = data.ReadInt(start + i, numberBits);
                 int full = data.ReadInt(start + i, 29);
@@ -274,7 +308,7 @@ namespace WindowsFormsApplication1
                     }
                 }
 
-                string labelText = block.name;
+                string labelText = block.info.name;
                 Font labelFont = new Font("Arial", 8);
                 SizeF labelSize = g.MeasureString(labelText, labelFont);
                 float labelX, labelY = index / 2 * 10;
@@ -354,8 +388,9 @@ namespace WindowsFormsApplication1
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
-                filter++;
+                //filter++;
                 //numberBits++;
+                charIndex++;
                 refreshAnimations(false);
             }
         }
