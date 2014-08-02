@@ -38,8 +38,7 @@ Their format is difficult to parse, but has clear patterns and sections; however
 * 1111111000000000000011 - happens twice if the previous section was skipped
 
 #### Structured Movement Data ####
-
 * 7 bits, interpreted as a number of movement segments, which are each:
-** 9 bits, interpreted as the time this movement happened
-** 13 bits, interpreted as an x-coordinate
-** 13 bits, interpreted as a y-coordinate
+  * 9 bits, interpreted as the time this movement happened
+  * 13 bits, interpreted as an x-coordinate
+  * 13 bits, interpreted as a y-coordinate
