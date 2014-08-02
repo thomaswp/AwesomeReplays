@@ -3,6 +3,13 @@ AwesomeReplays
 
 A replay parser for Awesomenauts. Currently supports reading .blockData files and displaying the paths of each character during that time. Note, the accuracy is still not perfect, and some paths are incorrect/noise.
 
+Building the Parser
+------------------
+
+* Download and install [Visual Studio Desktop Express 2013](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop)
+* Open the .sln file in the root directory
+* It should work without problem
+
 Format
 ------
 
