@@ -33,7 +33,7 @@ The character blocks have the following format:
 * What we're (possibly naively) dubbing the Ability block, of highly varying length - see below for more
 * An 18-bit id, which seems to be constant across different .blockData files for a given replay
 * Structured movement data (yay structure!) - see below for more
-* One or more sections of unknown format
+* One or more sections of unknown format - all we know is that at various points there are patterns that involve repeating 29-bit blocks of data, which likely correspond to animations or projectiles/particle effects
 
 #### Ability Blocks ####
 These blocks of at least 106 bits are so-named because they seem to increase in size dramatically only after abilities are purchased and used. They easily could store non-ability data as well.
