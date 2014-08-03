@@ -17,7 +17,7 @@ namespace WindowsFormsApplication1
 {
     public partial class MainForm : Form
     {
-        const string DEFAULT_FILE = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
+        const string DEFAULT_FILE = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_08_02_20_07_58\Replay_50.0049_60.0052.blockData"; //Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
         static readonly string[] DEFAULT_DIRS = new string[] {
             @"C:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays",
             @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays",
@@ -26,7 +26,7 @@ namespace WindowsFormsApplication1
         };
 
         const int MAX = MoveInfo.MAX_COORD;
-        static readonly Rectangle MAP_BOUNDS = new Rectangle((int)(MAX * 0.45f), (int)(MAX * 0.1f), (int)(MAX * 0.4f), (int)(MAX * 0.4f));
+        static readonly Rectangle MAP_BOUNDS = new Rectangle((int)(MAX * 0.40f), (int)(MAX * 0.1f), (int)(MAX * 0.4f), (int)(MAX * 0.4f));
 
         private CharacterBlock[] blocks;
         private BitData data;
@@ -167,6 +167,10 @@ namespace WindowsFormsApplication1
                 iconMap.Add(iconName, icon);
             }
 
+            for (int i = 0; i < blocks.Length; i++)
+                if (blocks[i].playerName == "dud88_dud") 
+                    charIndex = i;
+
             searchTest();
             //gcdTest();
             refreshAnimations();
@@ -250,10 +254,11 @@ namespace WindowsFormsApplication1
             }
         }
 
-        int filter = 2, numberBits = 9, charIndex = 0;
+        int filter = 2, numberBits = 13, charIndex = 0;
         private void refreshAnimations(bool refreshList = true)
         {
-            numberBits = numberBits % 28;
+            filter %= 29;
+            numberBits %= 28;
             if (blocks.Length < 2) return;
             Bitmap bmp = new Bitmap(this.pictureBoxAnimations.Width, this.pictureBoxAnimations.Height);
             Graphics g = Graphics.FromImage(bmp);
@@ -275,7 +280,7 @@ namespace WindowsFormsApplication1
                 if (animBox.Contains(x, y))
                 {
                     int rest = data.ReadInt(start + i + numberBits, 29 - numberBits);
-                    points.Add(string.Format("{0:D4}: {1:F4} - {2} - {3}", i, (float)number * 10 / (1 << numberBits), number.ToBinary(numberBits), rest.ToBinary(29 - numberBits)));
+                    points.Add(string.Format("{0:D4}: {1:F4} - {2} - {3}", i, (float)number / (1 << numberBits), number.ToBinary(numberBits), rest.ToBinary(29 - numberBits)));
                     if (points.Count - 1 == this.listBoxAnimations.SelectedIndex)
                         g.DrawEllipse(Pens.Red, new Rectangle(x - 2, y - 2, 5, 5));
                 }
@@ -450,9 +455,9 @@ namespace WindowsFormsApplication1
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
-                //filter++;
+                filter++;
                 //numberBits++;
-                charIndex++;
+                //charIndex++;
                 refreshAnimations(false);
             }
         }
