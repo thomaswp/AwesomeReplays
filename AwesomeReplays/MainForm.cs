@@ -95,12 +95,19 @@ namespace WindowsFormsApplication1
                 {
                     if (currentInfo != null)
                     {
-                        currentBlock.info = currentInfo;
-                        currentBlock.playerName = currentPlayer;
-                        currentBlock.abilityStart = currentAbilityStart;
-                        currentBlock.nameStart = currentAbilityStart - (currentInfo.alias.Length + 1) * 8;
-                        if (currentPlayer != null) currentBlock.nameStart -= (currentPlayer.Length + 1) * 8;
-                        segs.Add(currentBlock);
+                        if (currentBlock == null)
+                        {
+                            Console.WriteLine(data.ReadBlock(currentAbilityStart, i - currentAbilityStart) + " - " + currentInfo);
+                        }
+                        else
+                        {
+                            currentBlock.info = currentInfo;
+                            currentBlock.playerName = currentPlayer;
+                            currentBlock.abilityStart = currentAbilityStart;
+                            currentBlock.nameStart = currentAbilityStart - (currentInfo.alias.Length + 1) * 8;
+                            if (currentPlayer != null) currentBlock.nameStart -= (currentPlayer.Length + 1) * 8;
+                            segs.Add(currentBlock);
+                        }
                         currentBlock = null;
                     }
 
@@ -126,19 +133,20 @@ namespace WindowsFormsApplication1
 
                 if (currentInfo != null)
                 {
-                    int v = data.ReadInt(i, 24);
-                    CharacterBlock moves = CharacterBlock.Read(data, i + 24);
-                    if (moves != null)
+                    int v = data.ReadInt(i, 22) & ~0x1FC;
+                    if (true || v == 0x3F8003)
                     {
-                        if (currentBlock == null || moves.bitLength > currentBlock.bitLength)
+                        CharacterBlock moves = CharacterBlock.Read(data, i + 22);
+                        //if (moves == null) moves = CharacterBlock.Read(data, i + 32);
+                        if (moves != null && (currentBlock == null || moves.bitLength > currentBlock.bitLength))
                         {
                             currentBlock = moves;
-                            if (v == 0xFE000F) i = moves.RightBit;
+                            //i = moves.RightBit;
                         }
                     }
                 }
             }
-            if (currentInfo != null)
+            if (currentInfo != null && currentBlock  != null)
             {
                 currentBlock.info = currentInfo;
                 currentBlock.playerName = currentPlayer;
@@ -185,12 +193,12 @@ namespace WindowsFormsApplication1
             //int start = index == 0 ? 0 : blocks[index - 1].RightBit;
             //Console.WriteLine(data.ReadBlock(start, blocks[index].nameStart - start) + " - " + blocks[index].playerName);
 
-            //foreach (CharacterBlock block in blocks)
-            //{
-            //    int end = block.abilityStart;
-            //    int diff = block.index - block.abilityStart;
-            //    Console.WriteLine(data.ReadBlock(end, Math.Min(512, diff)) + " " + block.name + ": " + diff);
-            //}
+            foreach (CharacterBlock block in blocks)
+            {
+                int end = block.abilityStart;
+                int diff = block.index - block.abilityStart;
+                Console.WriteLine(data.ReadBlock(end, Math.Min(512, diff)) + " " + block.info.name + ": " + diff);
+            }
 
             //for (int i = 0; i < blocks.Length - 1; i++)
             //{
