@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WindowsFormsApplication1
+namespace AwesomeReplays
 {
     public class CharacterBlock
     {
@@ -21,7 +21,7 @@ namespace WindowsFormsApplication1
         public ActorInfo info;
         public string playerName;
 
-        public int RightBit { get { return index + bitLength; } }
+        public int NextBit { get { return index + bitLength; } }
 
         public float GetAverageMovement()
         {

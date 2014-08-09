@@ -13,11 +13,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WindowsFormsApplication1
+namespace AwesomeReplays
 {
     public partial class MainForm : Form
     {
-        const string DEFAULT_FILE = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_08_02_20_07_58\Replay_50.0049_60.0052.blockData"; //Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
+        //const string DEFAULT_FILE = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_08_02_20_07_58\Replay_50.0049_60.0052.blockData"; //Replay_2014_05_14_19_34_41\Replay_30.0015_40.002.blockData";
+        //const string DEFAULT_FILE = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_34_41\Replay_Continuous_30.0015_40.002.continuousData";
+        //const string DEFAULT_FILE = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_05_14_19_42_32\Replay_Continuous_20.011_30.0111.continuousData";
+        const string DEFAULT_FILE = @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays\Replay_2014_08_06_18_46_56\Replay_Continuous_80.0101_90.0099.continuousData";
         static readonly string[] DEFAULT_DIRS = new string[] {
             @"C:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays",
             @"E:\Program Files (x86)\Steam\SteamApps\common\Awesomenauts\Data\Replays",
@@ -65,7 +68,111 @@ namespace WindowsFormsApplication1
             }
         }
 
-        void load(string path)
+        void load(string fileName)
+        {
+            Console.WriteLine("Loading: " + fileName);
+            if (fileName.EndsWith(".blockData"))
+            {
+                blocks = new CharacterBlock[] { };
+                loadBlock(this.openFileDialog1.FileName);
+            }
+            else if (fileName.EndsWith(".continuousData"))
+            {
+                loadContinuous(fileName);
+            }
+        }
+
+        void loadContinuous(string path)
+        {
+            BitData data = new BitData(path);
+
+            //for (int length = 0; length < 32; length++)
+            //{
+            //    Console.WriteLine("Length: " + length);
+            //    for (int i = 56; i < data.Length; i++)
+            //    {
+            //        List<TimedData> list = TimedData.ReadList(data, i, length, 6);
+            //        if (list != null && list.Count > 0)
+            //        {
+            //            bool ascending = true;
+            //            for (int j = 1; j < list.Count; j++) if (list[j].value < list[j - 1].value) ascending = false;
+            //            if (ascending)
+            //            {
+            //                Console.WriteLine(i + ": " + string.Join(",", list));
+            //                //i = list[list.Count - 1].NextBit;
+            //            }
+            //        }
+            //    }
+            //}
+
+            //int[] series = new int[] { 185, 265, 270, 275, 280 };
+            //int[] difs = new int[] { 40, 40, 5, 5, 5 };
+            int[] series = new int[] { 330, 331, 334, 337, 338, 338, 342, 345, 346, 353, 356, 359, 360, 363, 372, 373, 376, 377, 378, 381, 382, 383, 386, 387, 388, 391, 392, 393, 394 }; //{ 305, 307, 315, 326, 329, 
+            int[] difs = new int[series.Length - 1]; for (int i = 0; i < difs.Length; i++) difs[i] = series[i + 1] - series[1];
+
+
+            var points = data.SearchIntSeries(difs, 6);
+            if (points != null)
+            {
+                foreach (int pt in points)
+                {
+                    int start = Math.Max(pt - 7, 0);
+                    string pts = pt.ToString(); while (pts.Length < 4) pts = "0" + pts;
+                    Console.WriteLine(pts + ": " + data.ReadInt(start, pt - start));
+                }
+            }
+
+            if (true) return;
+
+            int index = 0;
+            string header = data.ReadBlock(index, 56);
+            //Console.WriteLine(header);
+            index += 56;
+
+            for (int i = 0; i < 2; i++)
+            {
+                index = readBlock(data, index, 13);
+            }
+
+            readBlock(data, index, 10);
+
+            //if (data.ReadInt(index, 1) > 0)
+            //{
+            //    int d = data.ReadInt(index + 1, 6);
+            //    if (d != 1)
+            //    { }
+            //}
+            Console.WriteLine(data.ReadBlock(index, 300));
+
+            //for (int i = 3; i < 30; i++)
+            //{
+            //    Console.WriteLine("bits: " + i);
+            //    readBlock(data, index, i);
+            //}
+        }
+
+        private static int readBlock(BitData data, int index, int length)
+        {
+            int flag = data.ReadInt(index, 1);
+            index++;
+            if (flag != 1) return index;
+
+            int count = data.ReadInt(index, 6);
+            Console.WriteLine("Count: " + count);
+            index += 6;
+            for (int i = 0; i < count; i++)
+            {
+
+                int time = data.ReadInt(index, 9);
+                index += 9;
+                int solar = data.ReadInt(index, length);
+                index += length;
+                Console.WriteLine(time + ": " + solar);
+            }
+            return index;
+        }
+
+        void loadBlock(string path)
         {
             try
             {
@@ -271,7 +378,7 @@ namespace WindowsFormsApplication1
             Bitmap bmp = new Bitmap(this.pictureBoxAnimations.Width, this.pictureBoxAnimations.Height);
             Graphics g = Graphics.FromImage(bmp);
             charIndex %= (blocks.Length - 1);
-            int start = blocks[charIndex].RightBit;
+            int start = blocks[charIndex].NextBit;
             int length = blocks[charIndex + 1].abilityStart - (blocks[charIndex + 1].info.name.Length + 1) * 8 - start;
             //Console.WriteLine(data.ReadBlock(start, length));
 
@@ -435,8 +542,8 @@ namespace WindowsFormsApplication1
         {
             if (this.openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                blocks = new CharacterBlock[] { };
-                load(this.openFileDialog1.FileName);
+                string fileName = openFileDialog1.FileName;
+                load(fileName);
             }
         }
 

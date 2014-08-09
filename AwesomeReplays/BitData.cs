@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Collections;
 
-namespace WindowsFormsApplication1
+namespace AwesomeReplays
 {
     public class BitData
     {
