@@ -107,18 +107,27 @@ namespace AwesomeReplays
 
             //int[] series = new int[] { 185, 265, 270, 275, 280 };
             //int[] difs = new int[] { 40, 40, 5, 5, 5 };
-            int[] series = new int[] { 330, 331, 334, 337, 338, 338, 342, 345, 346, 353, 356, 359, 360, 363, 372, 373, 376, 377, 378, 381, 382, 383, 386, 387, 388, 391, 392, 393, 394 }; //{ 305, 307, 315, 326, 329, 
-            int[] difs = new int[series.Length - 1]; for (int i = 0; i < difs.Length; i++) difs[i] = series[i + 1] - series[1];
+            int[] series = new int[] { 329, 330, 331, 334, 337, 338, 338, 342, 345, 346, 353, 356, 359, 360, 363, 372, 373, 376, 377, 378, 381, 382, 383, 386, 387, 388, 391, 392, 393, 394 }; //{305, 307, 315, 326,
+            int[] difs = new int[series.Length - 1]; for (int i = 0; i < difs.Length; i++) difs[i] = series[i + 1] - series[i];
+            
 
-
-            var points = data.SearchIntSeries(difs, 6);
-            if (points != null)
+            for (int j = 0; j < 100; j++)
             {
-                foreach (int pt in points)
+                int[] locals = new int[series.Length]; for (int i = 0; i < locals.Length; i++) locals[i] = series[i] - series[0] + j;
+                for (int i = 4; i < 20; i++)
                 {
-                    int start = Math.Max(pt - 7, 0);
-                    string pts = pt.ToString(); while (pts.Length < 4) pts = "0" + pts;
-                    Console.WriteLine(pts + ": " + data.ReadInt(start, pt - start));
+                    var points = data.SearchIntSeries(locals, i);
+                    if (points != null)
+                    {
+                        Console.WriteLine(j);
+                        foreach (int pt in points)
+                        {
+                            //int start = Math.Max(pt - 7, 0);
+                            //string pts = pt.ToString(); while (pts.Length < 4) pts = "0" + pts;
+                            //Console.WriteLine(pts + ": " + data.ReadInt(start, pt - start));
+                            Console.WriteLine(pt + ": " + data.ReadInt(pt, i));
+                        }
+                    }
                 }
             }
 
